@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Institutions – VeriChecker</title>
+<meta name="description" content="The banks, mobile money providers, schools and companies VeriChecker has official records for.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<style>
+  .tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0 22px}
+  .tools input{flex:1 1 220px;padding:12px;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px}
+  .tools input:focus-visible{outline:3px solid var(--sky);outline-offset:1px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{padding:9px 16px;font:600 15px inherit;font-family:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--violet);border-color:var(--violet);color:#fff}
+  .chip:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .inst-list{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+  .inst{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--sky);border-radius:12px;padding:18px 20px}
+  .inst[data-type="Mobile money"]{border-top-color:var(--violet)}
+  .inst[data-type="School"]{border-top-color:var(--gold)}
+  .inst[data-type="Company"]{border-top-color:var(--mint)}
+  .inst h2{font-size:19px;margin:0 0 4px}
+  .badge{display:inline-block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px}
+  .inst dl{margin:0}
+  .inst dt{font-weight:600;font-size:14px;color:var(--muted);margin-top:8px}
+  .inst dd{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+  .inst .none{color:var(--muted);font-family:inherit;font-style:italic}
+  .empty{color:var(--muted)}
+  .demo{margin-top:20px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+
+<div class="hero hero--small">
+  <div class="wrap">
+    <header class="site-header">
+      <a class="brand" href="index.html"><img src="logo-wordmark.svg" alt="VeriChecker"></a>
+      <nav aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="check.html">Check a detail</a>
+        <a href="business.html">For businesses</a>
+        <a href="institutions.html" aria-current="page">Institutions</a>
+        <a href="about.html">How it works</a>
+      </nav>
+    </header>
+    <h1>Institutions</h1>
+    <p class="lede">The banks, mobile money providers, schools and companies we hold official records for.</p>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+    <path class="back" d="M0 30 C200 80 420 0 700 38 C980 76 1200 6 1440 34 L1440 80 L0 80 Z"/>
+    <path class="front" d="M0 46 C240 92 480 8 720 46 C960 84 1200 16 1440 46 L1440 80 L0 80 Z"/>
+  </svg>
+</div>
+
+<main class="wrap">
+  <div class="tools">
+    <input id="q" type="search" placeholder="Search by name" aria-label="Search institutions by name" autocomplete="off">
+    <div class="chips" id="chips" role="group" aria-label="Filter by type"></div>
+  </div>
+
+  <div class="inst-list" id="list" aria-live="polite"></div>
+
+  <p class="demo">These are example records while we collect confirmed details. Each institution will be added only from its own official sources.</p>
+</main>
+
+<footer class="wrap">
+  <div class="site-footer">
+    VeriChecker can only confirm that a detail is on an institution’s official list. It cannot tell whether a request for money is genuine. If a message or call you didn’t start asks you to pay, contact the institution yourself using a number from its official website or your card or statement.
+  </div>
+</footer>
+
+<script src="institutions.js"></script>
+<script>
+(function () {
+  var list = document.getElementById("list"), q = document.getElementById("q"), chips = document.getElementById("chips");
+  var current = "All";
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); };
+  var FIELDS = [["account","Account number"],["phone","Phone number"],["code","Paybill or merchant code"],["holder","Account holder name"]];
+
+  var types = ["All"];
+  INSTITUTIONS.forEach(function (i) { if (types.indexOf(i.type) < 0) types.push(i.type); });
+  types.forEach(function (t) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = t;
+    b.setAttribute("aria-pressed", t === "All" ? "true" : "false");
+    b.addEventListener("click", function () {
+      current = t;
+      Array.prototype.forEach.call(chips.children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
+      render();
+    });
+    chips.appendChild(b);
+  });
+
+  function render() {
+    var term = q.value.trim().toLowerCase();
+    var shown = INSTITUTIONS.filter(function (i) {
+      return (current === "All" || i.type === current) && i.name.toLowerCase().indexOf(term) >= 0;
+    });
+    if (!shown.length) { list.innerHTML = '<p class="empty">No institutions match. Try a different name or type.</p>'; return; }
+    list.innerHTML = shown.map(function (i) {
+      var rows = FIELDS.map(function (f) {
+        var vals = i[f[0]] || [];
+        return "<dt>" + f[1] + "</dt><dd" + (vals.length ? "" : ' class="none"') + ">" + (vals.length ? vals.map(esc).join("<br>") : "Not on file yet") + "</dd>";
+      }).join("");
+      return '<article class="inst" data-type="' + esc(i.type) + '"><h2>' + esc(i.name) + '</h2><span class="badge">' + esc(i.type) + "</span><dl>" + rows + "</dl></article>";
+    }).join("");
+  }
+  q.addEventListener("input", render);
+  render();
+})();
+</script>
+</body>
+</html>
