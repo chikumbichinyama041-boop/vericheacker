@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check a detail – VeriChecker</title>
+<meta name="description" content="Check an account number, phone number or payment code against the institution’s official record.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<style>
+  .check-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;margin-top:8px}
+  @media (max-width:760px){.check-grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px}
+  .panel h2{font-size:20px}
+  label{display:block;font-weight:600;margin:14px 0 6px}
+  select,input{width:100%;padding:12px;font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px}
+  select:focus-visible,input:focus-visible{outline:3px solid var(--sky);outline-offset:1px}
+  .hint{color:var(--muted);font-size:14px;margin:6px 0 0}
+  .go{margin-top:20px;width:100%;border:0;cursor:pointer;font:700 16px inherit;font-family:inherit}
+  .empty{color:var(--muted);margin:0}
+  .result{border-radius:10px;padding:18px;border:2px solid}
+  .result.ok{background:var(--ok-bg);border-color:var(--ok)}
+  .result.warn{background:var(--warn-bg);border-color:var(--warn)}
+  .result.bad{background:var(--bad-bg);border-color:var(--bad)}
+  .verdict{font-size:24px;font-weight:800;margin:0 0 8px}
+  .ok .verdict{color:var(--ok)} .warn .verdict{color:var(--warn)} .bad .verdict{color:var(--bad)}
+  .result p{margin:0 0 10px} .result p:last-child{margin-bottom:0}
+  .cmp{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--card);border-radius:8px;padding:10px 12px;margin:0 0 10px;overflow-wrap:anywhere}
+  mark{background:var(--bad);color:#fff;border-radius:3px;padding:0 2px}
+  .demo{margin-top:16px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+
+<div class="hero hero--small">
+  <div class="wrap">
+    <header class="site-header">
+      <a class="brand" href="index.html"><img src="logo-wordmark.svg" alt="VeriChecker"></a>
+      <nav aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="check.html" aria-current="page">Check a detail</a>
+        <a href="business.html">For businesses</a>
+        <a href="institutions.html">Institutions</a>
+        <a href="about.html">How it works</a>
+      </nav>
+    </header>
+    <h1>Check a detail</h1>
+    <p class="lede">Choose the institution, enter what you were given, and see whether it matches the official record.</p>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+    <path class="back" d="M0 30 C200 80 420 0 700 38 C980 76 1200 6 1440 34 L1440 80 L0 80 Z"/>
+    <path class="front" d="M0 46 C240 92 480 8 720 46 C960 84 1200 16 1440 46 L1440 80 L0 80 Z"/>
+  </svg>
+</div>
+
+<main class="wrap">
+  <div class="check-grid">
+    <form class="panel" id="form" novalidate>
+      <h2>What do you want to check?</h2>
+      <label for="inst">Institution</label>
+      <select id="inst"><option value="">Choose one…</option></select>
+
+      <label for="kind">What are you checking?</label>
+      <select id="kind">
+        <option value="account">Account number</option>
+        <option value="phone">Phone number</option>
+        <option value="code">Paybill or merchant code</option>
+        <option value="holder">Account holder name</option>
+      </select>
+
+      <label for="val">Detail you were given</label>
+      <input id="val" autocomplete="off">
+      <p class="hint" id="hint"></p>
+
+      <button class="btn go" type="submit">Check this detail</button>
+    </form>
+
+    <div class="panel" aria-live="polite">
+      <h2>Result</h2>
+      <div id="out"><p class="empty">Your result will appear here.</p></div>
+    </div>
+  </div>
+
+  <p class="demo">The institutions listed are examples while we collect confirmed records. A result here is not yet a real verification.</p>
+</main>
+
+<footer class="wrap">
+  <div class="site-footer">
+    VeriChecker can only confirm that a detail is on an institution’s official list. It cannot tell whether a request for money is genuine. If a message or call you didn’t start asks you to pay, contact the institution yourself using a number from its official website or your card or statement.
+  </div>
+</footer>
+
+<script src="institutions.js"></script>
+<script src="checker.js"></script>
+</body>
+</html>
