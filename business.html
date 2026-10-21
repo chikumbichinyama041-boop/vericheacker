@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For businesses – VeriChecker</title>
+<meta name="description" content="Schools, shops and companies: check who you are paying before the money moves.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<style>
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}
+  @media (max-width:760px){.two{grid-template-columns:1fr}}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .box h3{margin:0 0 10px;font-size:19px}
+  .box ul{margin:0;padding-left:20px}
+  .box li{margin:6px 0}
+  .box.does{border-top:6px solid var(--ok)}
+  .box.doesnt{border-top:6px solid var(--gold)}
+  .cta{margin:36px 0 8px;padding:26px;border-radius:14px;color:#fff;background:linear-gradient(120deg,var(--sky),var(--violet))}
+  .cta h2{color:#fff}
+  .cta p{margin:0 0 18px;max-width:56ch}
+</style>
+</head>
+<body>
+
+<div class="hero hero--small">
+  <div class="wrap">
+    <header class="site-header">
+      <a class="brand" href="index.html"><img src="logo-wordmark.svg" alt="VeriChecker"></a>
+      <nav aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="check.html">Check a detail</a>
+        <a href="business.html" aria-current="page">For businesses</a>
+        <a href="institutions.html">Institutions</a>
+        <a href="about.html">How it works</a>
+      </nav>
+    </header>
+    <h1>Know who you are paying.</h1>
+    <p class="lede">For schools, shops and companies that send money to suppliers, institutions and each other.</p>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+    <path class="back" d="M0 30 C200 80 420 0 700 38 C980 76 1200 6 1440 34 L1440 80 L0 80 Z"/>
+    <path class="front" d="M0 46 C240 92 480 8 720 46 C960 84 1200 16 1440 46 L1440 80 L0 80 Z"/>
+  </svg>
+</div>
+
+<main class="wrap">
+  <section class="section">
+    <h2>When to use it</h2>
+    <ul class="list">
+      <li><strong>A new supplier sends their details</strong><span>Check their mobile money number or bank account before the first payment.</span></li>
+      <li><strong>A message says “we’ve changed our account”</strong><span>This is the most common trick. Check the new details before you send anything.</span></li>
+      <li><strong>You are paying a bill, a fee or a school account</strong><span>Check the paybill, merchant code or account number first.</span></li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>What it does, and what it doesn’t</h2>
+    <div class="two">
+      <div class="box does">
+        <h3>It does</h3>
+        <ul>
+          <li>Compare an account, phone number, payment code or name with the institution’s official record</li>
+          <li>Warn you when a detail is almost the same as a real one</li>
+          <li>Give you a result in seconds, any time of day</li>
+        </ul>
+      </div>
+      <div class="box doesnt">
+        <h3>It doesn’t</h3>
+        <ul>
+          <li>Confirm that money has reached your account. Check your own balance for that</li>
+          <li>Tell you whether a request for money is genuine</li>
+          <li>Replace calling the institution when something still feels wrong</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Plans for businesses</h2>
+    <p>We are still working out how business plans will work, and we want to shape them with the first schools, shops and companies that use VeriChecker.</p>
+  </section>
+
+  <div class="cta">
+    <h2>Try a check now</h2>
+    <p>Pick the institution, enter the detail you were given, and see whether it matches.</p>
+    <a class="btn" href="check.html">Check a detail</a>
+  </div>
+</main>
+
+<footer class="wrap">
+  <div class="site-footer">
+    VeriChecker can only confirm that a detail is on an institution’s official list. It cannot tell whether a request for money is genuine. If a message or call you didn’t start asks you to pay, contact the institution yourself using a number from its official website or your card or statement.
+  </div>
+</footer>
+
+</body>
+</html>
