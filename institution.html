@@ -3,31 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Institutions – VeriChecker</title>
-<meta name="description" content="The banks, mobile money providers, schools and companies VeriChecker has official records for.">
+<title>Official details – VeriChecker</title>
+<meta name="description" content="An institution's official payment and contact details, with the source and the date they were checked.">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
 <style>
-  .tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0 22px}
-  .tools input{flex:1 1 220px;padding:12px;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px}
-  .tools input:focus-visible{outline:3px solid var(--sky);outline-offset:1px}
-  .chips{display:flex;flex-wrap:wrap;gap:8px}
-  .chip{padding:9px 16px;font:600 15px inherit;font-family:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;cursor:pointer}
-  .chip[aria-pressed="true"]{background:var(--violet);border-color:var(--violet);color:#fff}
-  .chip:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-  .inst-list{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
-  .inst{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--sky);border-radius:12px;padding:18px 20px}
-  .inst[data-type="Mobile money"]{border-top-color:var(--violet)}
-  .inst[data-type="School"]{border-top-color:var(--gold)}
-  .inst[data-type="Company"]{border-top-color:var(--mint)}
-  .inst h2{font-size:19px;margin:0 0 4px}
-  .badge{display:inline-block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px}
-  .inst dl{margin:0}
-  .inst dt{font-weight:600;font-size:14px;color:var(--muted);margin-top:8px}
-  .inst dd{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;overflow-wrap:anywhere}
-  .inst .none{color:var(--muted);font-family:inherit;font-style:italic}
-  .empty{color:var(--muted)}
-  .demo{margin-top:20px;color:var(--muted);font-size:14px}
+  .page{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--violet);border-radius:12px;padding:24px;max-width:640px}
+  .page h2{font-size:26px;margin:0 0 4px}
+  .badge{display:inline-block;font-size:14px;font-weight:700;color:var(--muted);margin-bottom:14px}
+  .page dl{margin:0}
+  .page dt{font-weight:600;font-size:14px;color:var(--muted);margin-top:14px}
+  .page dd{margin:2px 0 0;font:600 18px ui-monospace,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+  .page .none{color:var(--muted);font:italic 16px inherit;font-family:inherit;font-weight:400}
+  .src{margin:20px 0 0;font-size:14px;color:var(--muted)}
+  .addr{margin-top:18px;padding:14px 16px;background:var(--warn-bg);border-radius:8px;max-width:640px}
+  .addr strong{overflow-wrap:anywhere}
+  .actions{margin-top:18px}
+  .status{display:inline-block;font-size:14px;font-weight:700;padding:3px 10px;border-radius:999px;margin:0 0 14px 8px}
+  .status.ok{background:var(--ok-bg);color:var(--ok)}
+  .status.wait{background:var(--warn-bg);color:var(--warn)}
+  .req{margin-top:32px;padding:20px 22px;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--gold);border-radius:12px;max-width:640px}
+  .req h2{font-size:20px;margin:0 0 6px}
 </style>
 </head>
 <body>
@@ -40,12 +36,12 @@
         <a href="index.html">Home</a>
         <a href="check.html">Check a detail</a>
         <a href="business.html">For businesses</a>
-        <a href="institutions.html" aria-current="page">Institutions</a>
+        <a href="institutions.html">Institutions</a>
         <a href="about.html">How it works</a>
       </nav>
     </header>
-    <h1>Institutions</h1>
-    <p class="lede">The banks, mobile money providers, schools and companies we hold official records for.</p>
+    <h1>Official details</h1>
+    <p class="lede">What the institution has published, and when we checked it.</p>
   </div>
   <svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
     <path class="back" d="M0 30 C200 80 420 0 700 38 C980 76 1200 6 1440 34 L1440 80 L0 80 Z"/>
@@ -54,14 +50,14 @@
 </div>
 
 <main class="wrap">
-  <div class="tools">
-    <input id="q" type="search" placeholder="Search by name" aria-label="Search institutions by name" autocomplete="off">
-    <div class="chips" id="chips" role="group" aria-label="Filter by type"></div>
-  </div>
-
-  <div class="inst-list" id="list" aria-live="polite"></div>
-
-  <p class="demo">These are example records while we collect confirmed details. Each institution will be added only from its own official sources.</p>
+  <div id="out"></div>
+  <p class="addr" id="addr" hidden>You are on <strong id="host"></strong>. Before you rely on this page, check that this address is exactly the one printed on your invoice or message. A copy of this page on a similar address can show different details.</p>
+  <p class="actions" id="actions" hidden><a class="btn" href="check.html">Check a detail against this record</a></p>
+  <section class="req">
+    <h2>Is this your business? Get your business page</h2>
+    <p>Sellers on Facebook and WhatsApp can have a page like this, with a link to show on their posts and invoices. We check each business ourselves before a page is marked Confirmed. Until then it shows Being checked. Do not send us copies of your NRC or tax papers. We will ask to see them on a video call or in person.</p>
+    <div id="reqAction"></div>
+  </section>
 </main>
 
 <footer class="wrap">
@@ -71,44 +67,50 @@
 </footer>
 
 <script src="institutions.js"></script>
+<script src="config.js"></script>
+<script src="request.js"></script>
 <script>
 (function () {
-  var list = document.getElementById("list"), q = document.getElementById("q"), chips = document.getElementById("chips");
-  var current = "All";
+  var out = document.getElementById("out");
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); };
-  var FIELDS = [["account","Account number"],["phone","Phone number"],["code","Paybill or merchant code"],["holder","Account holder name"]];
+  var FIELDS = [["account","Account number"],["phone","Phone number"],["email","Email address"],["code","Paybill or merchant code"],["holder","Account holder name"]];
 
-  var types = ["All"];
-  INSTITUTIONS.forEach(function (i) { if (types.indexOf(i.type) < 0) types.push(i.type); });
-  types.forEach(function (t) {
-    var b = document.createElement("button");
-    b.type = "button"; b.className = "chip"; b.textContent = t;
-    b.setAttribute("aria-pressed", t === "All" ? "true" : "false");
-    b.addEventListener("click", function () {
-      current = t;
-      Array.prototype.forEach.call(chips.children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
-      render();
-    });
-    chips.appendChild(b);
-  });
+  function statusTag(r) {
+    return r.status === "confirmed"
+      ? '<span class="status ok">Confirmed</span>'
+      : '<span class="status wait">Being checked</span>';
+  }
 
   function render() {
-    var term = q.value.trim().toLowerCase();
-    var shown = INSTITUTIONS.filter(function (i) {
-      return (current === "All" || i.type === current) && i.name.toLowerCase().indexOf(term) >= 0;
-    });
-    if (!shown.length) { list.innerHTML = '<p class="empty">No institutions match. Try a different name or type.</p>'; return; }
-    list.innerHTML = shown.map(function (i) {
-      var rows = FIELDS.map(function (f) {
-        var vals = i[f[0]] || [];
-        return "<dt>" + f[1] + "</dt><dd" + (vals.length ? "" : ' class="none"') + ">" + (vals.length ? vals.map(esc).join("<br>") : "Not on file yet") + "</dd>";
-      }).join("");
-      return '<article class="inst" data-type="' + esc(i.type) + '"><h2>' + esc(i.name) + '</h2><span class="badge">' + esc(i.type) + "</span><dl>" + rows + "</dl></article>";
+    var id = decodeURIComponent(location.hash.replace(/^#/, ""));
+    var r = INSTITUTIONS.find(function (x) { return x.id === id; });
+    if (!r) {
+      out.innerHTML = '<p>We have no official record for this link. Check the address, or <a href="institutions.html">browse the institutions we hold records for</a>.</p>';
+      document.getElementById("addr").hidden = true; document.getElementById("actions").hidden = true;
+      document.title = "Official details – VeriChecker";
+      return;
+    }
+    document.title = r.name + " – official details – VeriChecker";
+    var rows = FIELDS.map(function (f) {
+      var vals = r[f[0]] || [];
+      return "<dt>" + f[1] + "</dt><dd" + (vals.length ? "" : ' class="none"') + ">" + (vals.length ? vals.map(esc).join("<br>") : "Not on file yet") + "</dd>";
     }).join("");
+    var src = "";
+    if (r.source) {
+      var host = r.source; try { host = new URL(r.source).hostname.replace(/^www\./, ""); } catch (e) {}
+      var d = r.confirmed ? ", checked " + new Date(r.confirmed + "T00:00:00").toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" }) : "";
+      src = '<p class="src">Source: <a href="' + esc(r.source) + '" target="_blank" rel="noopener">' + esc(host) + "</a>" + d + "</p>";
+    }
+    out.innerHTML = '<article class="page"><h2>' + esc(r.name) + '</h2><span class="badge">' + esc(r.type) + '</span>' + statusTag(r) + "<dl>" + rows + "</dl>" + src + "</article>";
+    document.getElementById("host").textContent = location.host || "this page";
+    document.getElementById("addr").hidden = false; document.getElementById("actions").hidden = false;
   }
-  q.addEventListener("input", render);
+  window.addEventListener("hashchange", render);
   render();
 })();
 </script>
 </body>
 </html>
+
+  
+  
