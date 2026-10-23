@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -35,6 +35,8 @@
   .bdg-url{font:600 14px ui-monospace,Menlo,Consolas,monospace;color:var(--ink);overflow-wrap:anywhere;background:var(--paper);padding:8px 10px;border-radius:6px}
   .bdg-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
   .bdg-actions button{border:0;cursor:pointer;font:inherit;font-weight:700}
+  .rep{margin-top:32px;max-width:640px}
+  .rep h2{font-size:20px;margin:0 0 6px}
   .btn.alt{background:var(--paper);border:1px solid var(--line)}
 </style>
 </head>
@@ -46,7 +48,6 @@
       <a class="brand" href="index.html"><img src="logo-wordmark.svg" alt="VeriChecker"></a>
       <nav aria-label="Main">
         <a href="index.html">Home</a>
-        <a href="check.html">Check a detail</a>
         <a href="business.html">For businesses</a>
         <a href="institution.html#mtn-zambia">Example page</a>
         <a href="about.html">How it works</a>
@@ -72,6 +73,13 @@
     <p>Sellers on Facebook and WhatsApp can have a page like this, with a link to show on their posts and invoices. We check each business ourselves before a page is marked Confirmed. Until then it shows Being checked. Do not send us copies of your NRC or tax papers. We will ask to see them on a video call or in person.</p>
     <div id="reqAction"></div>
   </section>
+
+  <section class="rep" id="reportBox">
+    <h2>Think this page is fake or wrong?</h2>
+    <p>If the details here do not match what you were sent, or the page looks like a copy, tell us. We will look at it.</p>
+    <div id="reportAction"></div>
+  </section>
+
 </main>
 
 <footer class="wrap">
