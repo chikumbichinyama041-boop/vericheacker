@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -24,6 +24,18 @@
   .status.wait{background:var(--warn-bg);color:var(--warn)}
   .req{margin-top:32px;padding:20px 22px;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--gold);border-radius:12px;max-width:640px}
   .req h2{font-size:20px;margin:0 0 6px}
+  .bdg{margin-top:24px;max-width:640px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .bdg-top{background:linear-gradient(120deg,var(--sky),var(--violet));color:#fff;padding:14px 22px;font-weight:800;font-size:18px}
+  .bdg-body{padding:20px 22px;display:flex;gap:22px;flex-wrap:wrap;align-items:center}
+  .bdg-qr{width:200px;max-width:100%;border:1px solid var(--line);border-radius:8px;background:#fff}
+  .bdg-qr svg{display:block;width:100%;height:auto}
+  .bdg-info{flex:1;min-width:220px}
+  .bdg-info h3{margin:0 0 4px;font-size:20px}
+  .bdg-info p{margin:0 0 8px;color:var(--muted);font-size:15px}
+  .bdg-url{font:600 14px ui-monospace,Menlo,Consolas,monospace;color:var(--ink);overflow-wrap:anywhere;background:var(--paper);padding:8px 10px;border-radius:6px}
+  .bdg-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .bdg-actions button{border:0;cursor:pointer;font:inherit;font-weight:700}
+  .btn.alt{background:var(--paper);border:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -36,7 +48,7 @@
         <a href="index.html">Home</a>
         <a href="check.html">Check a detail</a>
         <a href="business.html">For businesses</a>
-        <a href="institutions.html">Institutions</a>
+        <a href="institution.html#mtn-zambia">Example page</a>
         <a href="about.html">How it works</a>
       </nav>
     </header>
@@ -53,6 +65,8 @@
   <div id="out"></div>
   <p class="addr" id="addr" hidden>You are on <strong id="host"></strong>. Before you rely on this page, check that this address is exactly the one printed on your invoice or message. A copy of this page on a similar address can show different details.</p>
   <p class="actions" id="actions" hidden><a class="btn" href="check.html">Check a detail against this record</a></p>
+  <section class="bdg" id="badgeBox" hidden aria-label="Badge and QR code"></section>
+
   <section class="req">
     <h2>Is this your business? Get your business page</h2>
     <p>Sellers on Facebook and WhatsApp can have a page like this, with a link to show on their posts and invoices. We check each business ourselves before a page is marked Confirmed. Until then it shows Being checked. Do not send us copies of your NRC or tax papers. We will ask to see them on a video call or in person.</p>
@@ -69,6 +83,7 @@
 <script src="institutions.js"></script>
 <script src="config.js"></script>
 <script src="request.js"></script>
+<script src="qr.js"></script>
 <script>
 (function () {
   var out = document.getElementById("out");
@@ -81,12 +96,78 @@
       : '<span class="status wait">Being checked</span>';
   }
 
+
+  function longDate(iso) {
+    return new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
+  }
+
+  function showBadge(r) {
+    var box = document.getElementById("badgeBox");
+    if (r.status !== "confirmed" || !window.makeQrSvg) { box.hidden = true; box.innerHTML = ""; return; }
+    var url = location.href;
+    var checked = r.confirmed ? longDate(r.confirmed) : "";
+    box.innerHTML =
+      '<div class="bdg-top">Verified by VeriChecker</div>' +
+      '<div class="bdg-body"><div class="bdg-qr" role="img" aria-label="QR code for this page">' + window.makeQrSvg(url) + '</div>' +
+      '<div class="bdg-info"><h3>' + esc(r.name) + '</h3>' +
+      (checked ? '<p>Details last checked: ' + esc(checked) + '</p>' : '') +
+      '<p>Scan the code, then check that the address is exactly this one:</p><div class="bdg-url">' + esc(url) + '</div>' +
+      '<div class="bdg-actions"><button type="button" class="btn" id="dlBadge">Download badge (PNG)</button>' +
+      '<button type="button" class="btn alt" id="cpLink">Copy page link</button></div></div></div>';
+    box.hidden = false;
+    document.getElementById("dlBadge").onclick = function () { downloadBadge(r, url, checked); };
+    document.getElementById("cpLink").onclick = function () {
+      var b = this, ok = function () { b.textContent = "Copied"; };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(ok);
+      else { var t = document.createElement("textarea"); t.value = url; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); ok(); }
+    };
+  }
+
+  function wrapText(ctx, text, x, y, maxW, lh, byWord) {
+    var parts = byWord ? text.split(" ") : text.split(""), sep = byWord ? " " : "", line = "", i, test;
+    for (i = 0; i < parts.length; i++) {
+      test = line ? line + sep + parts[i] : parts[i];
+      if (ctx.measureText(test).width > maxW && line) { ctx.fillText(line, x, y); y += lh; line = parts[i]; } else line = test;
+    }
+    if (line) { ctx.fillText(line, x, y); y += lh; }
+    return y;
+  }
+
+  function downloadBadge(r, url, checked) {
+    var W = 700, H = 900, c = document.createElement("canvas"); c.width = W; c.height = H;
+    var ctx = c.getContext("2d"), sans = "system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif";
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
+    var g = ctx.createLinearGradient(0, 0, W, 0); g.addColorStop(0, "#25c6f5"); g.addColorStop(1, "#7b3fe4");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, 120);
+    ctx.fillStyle = "#fff"; ctx.font = "800 44px " + sans; ctx.textAlign = "center"; ctx.fillText("Verified by VeriChecker", W / 2, 76);
+    ctx.fillStyle = "#1b1740"; ctx.font = "800 40px " + sans;
+    var y = wrapText(ctx, r.name, W / 2, 190, W - 80, 48, true);
+    var img = new Image();
+    img.onload = function () {
+      var qy = Math.max(y + 10, 240);
+      ctx.drawImage(img, (W - 420) / 2, qy, 420, 420);
+      var ty = qy + 420 + 40;
+      ctx.fillStyle = "#5a5a80"; ctx.font = "600 24px " + sans;
+      if (checked) { ctx.fillText("Details last checked: " + checked, W / 2, ty); ty += 40; }
+      ctx.fillStyle = "#1b1740"; ctx.font = "700 22px ui-monospace,Menlo,Consolas,monospace";
+      ty = wrapText(ctx, url, W / 2, ty, W - 80, 30);
+      ctx.fillStyle = "#5a5a80"; ctx.font = "600 21px " + sans;
+      wrapText(ctx, "Scan the code, then check the address above is exactly the one you were sent.", W / 2, ty + 14, W - 100, 28, true);
+      c.toBlob(function (blob) {
+        var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+        a.download = "verichecker-badge-" + r.id + ".png"; document.body.appendChild(a); a.click(); a.remove();
+      }, "image/png");
+    };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(window.makeQrSvg(url).replace("<svg ", '<svg width="420" height="420" '));
+  }
+
   function render() {
     var id = decodeURIComponent(location.hash.replace(/^#/, ""));
     var r = INSTITUTIONS.find(function (x) { return x.id === id; });
     if (!r) {
       out.innerHTML = '<p>We have no official record for this link. Check the address, or <a href="institutions.html">browse the institutions we hold records for</a>.</p>';
       document.getElementById("addr").hidden = true; document.getElementById("actions").hidden = true;
+      document.getElementById("badgeBox").hidden = true;
       document.title = "Official details – VeriChecker";
       return;
     }
@@ -104,6 +185,7 @@
     out.innerHTML = '<article class="page"><h2>' + esc(r.name) + '</h2><span class="badge">' + esc(r.type) + '</span>' + statusTag(r) + "<dl>" + rows + "</dl>" + src + "</article>";
     document.getElementById("host").textContent = location.host || "this page";
     document.getElementById("addr").hidden = false; document.getElementById("actions").hidden = false;
+    showBadge(r);
   }
   window.addEventListener("hashchange", render);
   render();
@@ -111,6 +193,3 @@
 </script>
 </body>
 </html>
-
-  
-  
